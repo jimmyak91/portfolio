@@ -1,0 +1,30 @@
+
+body {
+  font-family: 'Montserrat', sans-serif;
+}
+
+
+.navigation {
+  margin: 2.5rem 0rem;
+}
+
+.main-index {
+  text-align: center;
+}
+
+.intro-heading {
+  font-family: 'peace_sansregular';
+}
+
+
+
+
+@font-face {
+  font-family: 'peace_sansregular';
+  src: url('http://127.0.0.1:5000/static/files/fonts/peace_sans-webfont.woff2') format('woff2'),
+       url('http://127.0.0.1:5000/static/files/fonts/peace_sans-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap');
