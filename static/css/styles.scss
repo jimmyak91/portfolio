@@ -1,0 +1,157 @@
+$bar-width: 50px;
+$bar-height: 5px;
+$bar-spacing: 16px;
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  /* color: #474647; */
+  color: whitesmoke;
+  -webkit-font-smoothing: antialiased;
+}
+
+
+.navigation {
+  margin: 2.5rem 0rem;
+  position: relative;
+}
+
+.nav-right {
+  text-align: right;
+  padding: 4rem 0rem;
+  // cursor: pointer;
+}
+
+// .hamburger .line{
+//   width: 50px;
+//   height: 5px;
+//   background-color: whitesmoke;
+//   display: block;
+//   margin: 8px auto;
+//   -webkit-transition: all 0.3s ease-in-out;
+//   -o-transition: all 0.3s ease-in-out;
+//   transition: all 0.3s ease-in-out;
+// }
+.menu-wrapper {
+	position: relative;
+  margin: auto;
+  width: $bar-width;
+	height: $bar-height + $bar-spacing*2;
+	cursor: pointer;
+}
+
+.hamburger-menu,
+.hamburger-menu:after,
+.hamburger-menu:before {
+  width: $bar-width;
+	height: $bar-height;
+}
+
+.hamburger-menu {
+	position: relative;
+	transform: translateY($bar-spacing);
+	background: rgba(255, 255, 255, 1);
+	transition: all 0ms 300ms;
+  z-index: 3;
+  
+  &.animate {
+    background: rgba(255, 255, 255, 0); 
+  }
+}
+
+.hamburger-menu:before {
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: $bar-spacing;
+	background: rgba(255, 255, 255, 1);
+	transition: bottom 300ms 300ms cubic-bezier(0.23, 1, 0.32, 1), transform 300ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.hamburger-menu:after {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: $bar-spacing;
+	background: rgba(255, 255, 255, 1);
+	transition: top 300ms 300ms cubic-bezier(0.23, 1, 0.32, 1), transform 300ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.hamburger-menu.animate:after {
+	top: 0;
+	transform: rotate(45deg);
+	transition: top 300ms cubic-bezier(0.23, 1, 0.32, 1), transform 300ms 300ms cubic-bezier(0.23, 1, 0.32, 1);;
+}
+
+.hamburger-menu.animate:before {
+	bottom: 0;
+	transform: rotate(-45deg);
+	transition: bottom 300ms cubic-bezier(0.23, 1, 0.32, 1), transform 300ms 300ms cubic-bezier(0.23, 1, 0.32, 1);;
+}
+
+
+
+.main {
+  height: 100vh;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.main video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: auto;
+  height: auto;
+  z-index: 0;
+  -ms-transform: translateX(-50%) translateY(-50%);
+  -moz-transform: translateX(-50%) translateY(-50%);
+  -webkit-transform: translateX(-50%) translateY(-50%);
+  transform: translateX(-50%) translateY(-50%);
+}
+
+.main-index {
+  text-align: center;
+  margin: 5rem 0rem;
+  padding: 1rem;
+  position: relative;
+  z-index: 2;
+}
+
+.intro-heading {
+  margin: 2rem 0rem;
+  font-family: 'peace_sansregular';
+  text-decoration: underline;
+  text-decoration-color: #E4892E;
+  text-underline-offset: 0.6rem
+}
+
+.intro-heading h1 {
+  font-size: 3.5rem;
+}
+
+
+.intro-main h4 {
+  margin: 1rem;
+  font-size: 1.8rem;
+  font-weight: 300;
+}
+
+.intro-main h5 {
+  font-size: 1.4rem;
+  font-weight: 300;
+
+}
+
+
+
+
+@font-face {
+  font-family: 'peace_sansregular';
+  src: url('http://127.0.0.1:5000/static/files/fonts/peace_sans-webfont.woff2') format('woff2'),
+       url('http://127.0.0.1:5000/static/files/fonts/peace_sans-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300&display=swap');
