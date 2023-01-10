@@ -24,9 +24,20 @@ function onMouseMove(e) {
 
 // Hover an element
 function onMouseHover() {
+  TweenMax.to($cursor, .3, {
+    scale: 2
+  })
 	$cursor.classList.add("hover")
 }
 
 function onMouseHoverOut() {
-	$cursor.classList.remove("hover")
+  TweenMax.to($cursor, .3, {
+    scale: 0.5
+  })
+	
+	setTimeout(function() {
+		$cursor.classList.remove("hover");
+	}, 240);
 }
+
+
