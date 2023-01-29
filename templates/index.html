@@ -22,7 +22,7 @@
   <div class="main">
     <!-- Background Video -->
     <video playsinline="playsinline" autoplay="autoplay" muted="muted" loop="loop">
-      <source src="http://127.0.0.1:5000/static/files/coding-bg.mp4" type="video/mp4">
+      <source src="{{ url_for('static', filename='files/coding-bg.mp4') }}" type="video/mp4">
     </video>
     <!-- Navigation -->
     <div class="container-fluid navigation">
