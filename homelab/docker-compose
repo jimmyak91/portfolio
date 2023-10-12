@@ -1,0 +1,97 @@
+version: '3.8'
+services:
+  nginx-proxy:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - /app/nginx-proxy/data:/data
+      - /app/nginx-proxy/letsencrypt:/etc/letsencrypt
+  sonarr:
+    image: 'lscr.io/linuxserver/sonarr:latest'
+    restart: unless-stopped
+    ports:
+      - '8989:8989'
+    volumes:
+      - /app/sonarr/config:/config
+      - /mnt/truenas/tvshows:/tv
+      - /app/deluge/data:/data
+    environment:
+      - TZ=Australia/Sydney
+      - PUID=1001
+      - PGID=1001
+  jackett:
+    image: 'lscr.io/linuxserver/jackett:latest'
+    restart: unless-stopped
+    ports:
+      - '9117:9117'
+    volumes:
+      - /app/jackett/config:/config
+      - /app/jackett/blackhole:/downloads
+    environment:
+      - TZ=Australia/Sydney
+      - PUID=1001
+      - PGID=1001
+      - AUTO_UPDATE=true
+  deluge:
+    image: 'binhex/arch-delugevpn'
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - '8112:8112'
+      - '8118:8118'
+      - '58846:58846'
+      - '58946:58946'
+    volumes:
+      - /app/deluge/data:/data
+      - /app/deluge/config:/config
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - VPN_ENABLED=yes
+      - VPN_USER=Jd6eHPCvj21ugvJ1idpk2AAB
+      - VPN_PASS=5Nc67N6r1CtZuu62nb3ptiEe
+      - VPN_PROV=custom
+      - VPN_CLIENT=openvpn
+      - STRICT_PORT_FORWARD=yes
+      - ENABLE_PRIVOXY=yes
+      - LAN_NETWORK=10.10.120.0/24
+      - NAME_SERVERS=10.10.120.10,10.10.120.11,1.1.1.1,1.0.0.1
+      - DELUGE_DAEMON_LOG_LEVEL=info
+      - DELUGE_WEB_LOG_LEVEL=info
+      - DELUGE_ENABLE_WEBUI_PASSWORD=yes
+      - VPN_INPUT_PORTS=1234
+      - VPN_OUTPUT_PORTS=5678
+      - DEBUG=false
+      - UMASK=0000
+      - PUID=1001
+      - PGID=1001
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ=Australia/Sydney
+    volumes:
+      - /app/radarr/config:/config
+      - /mnt/truenas/movies:/movies #optional
+      - /app/deluge/data:/downloads #optional
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+  overseerr:
+    image: sctx/overseerr:latest
+    container_name: overseerr
+    environment:
+      - LOG_LEVEL=debug
+      - TZ=Australia/Sydney
+      - PORT=5055 #optional
+    ports:
+      - 5055:5055
+    volumes:
+      - /app/overseerr/config:/app/config
+    restart: unless-stopped

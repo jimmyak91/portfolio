@@ -1,0 +1,11 @@
+docker run -d \
+  --name=jackett \
+  -e PUID=1001 \
+  -e PGID=1001 \
+  -e TZ=Australia/Sydney \
+  -e AUTO_UPDATE=true \
+  -p 9117:9117 \
+  -v /app/jackett/config:/config \
+  -v /app/jackett/blackhole:/downloads \
+  --restart unless-stopped \
+  lscr.io/linuxserver/jackett:latest

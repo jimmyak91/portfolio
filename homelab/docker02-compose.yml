@@ -1,0 +1,164 @@
+version: "3.7"
+
+services:
+  plex:
+    image: plexinc/pms-docker
+    container_name: plex
+    restart: unless-stopped
+    environment:
+      - TZ=Australia/Sydney
+      - PLEX_CLAIM=claim-xYfznmp-H81J2PLX8sJ3
+    network_mode: host
+    volumes:
+      - /home/jamesk/docker/plex/config:/config
+      - /home/jamesk/docker/plex/transcode:/transcode
+      - /nfs/plex:/data
+  kavita:
+    image: kizaing/kavita:latest
+    container_name: kavita
+    volumes:
+      - /nfs/kavita/data:/data
+      - ./config:/kavita/config
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+# INFLUXDB - DATABASE FOR SENSOR DATA
+  influxdb:
+    image: influxdb:1.8.6
+    container_name: influxdb
+    restart: always
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - 8086:8086
+      - 8089:8089/udp
+    volumes:
+      - /home/jamesk/docker/influxdb/influxdb.conf:/etc/influxdb/influxdb.conf:ro
+      - /home/jamesk/docker/influxdb/db:/var/lib/influxdb
+    environment:
+      - TZ=Australia/Sydney
+      - INFLUXDB_HTTP_ENABLED=true
+      - INFLUXDB_DB=host
+    command: -config /etc/influxdb/influxdb.conf
+    # HDDTEMP - MONITOR HDD TEMPS
+  hddtemp:
+    image: drewster727/hddtemp-docker:latest
+    container_name: hddtemp
+    restart: unless-stopped
+    privileged: true
+    environment:
+      - HDDTEMP_ARGS="-q -d -F /dev/sd*"
+      - TZ=Australia/Sydney
+       # TELEGRAF - SERVER TELEMERTY AND METRICS COLLECTOR
+  telegraf:
+    image: tigerhacker/telegraf-smartctl:latest
+    container_name: telegraf
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /home/jamesk/docker/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/rootfs/sys:ro
+      - /proc:/rootfs/proc:ro
+      - /etc:/rootfs/etc:ro
+    environment:
+      - TZ=Australia/Sydney
+      - HOST_PROC=/rootfs/proc
+      - HOST_SYS=/rootfs/sys
+      - HOST_ETC=/rootfs/etc
+    privileged: true
+        # GRAFANA - GRAPHICAL DATA VISUALIZATION FOR INFLUXDB DATA
+  grafana:
+    image: mbarmem/grafana-render:latest
+    container_name: grafana
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - 3000:3000
+    user: "0"
+    volumes:
+      - /home/jamesk/docker/grafana:/var/lib/grafana
+      - /home/jamesk/docker/grafana/grafana.ini:/etc/grafana/grafana.ini
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource,grafana-worldmap-panel,grafana-piechart-panel
+
+  tautulli:
+    image: tautulli/tautulli
+    container_name: tautulli
+    restart: unless-stopped
+    volumes:
+      - /home/jamesk/docker/tautulli:/config
+    environment:
+      - TZ=Australia/Sydney
+    ports:
+      - 8181:8181
+
+  varken:
+    hostname: varken
+    image: boerderij/varken
+    volumes:
+      - /home/jamesk/docker/varken:/config
+    environment:
+      - TZ=Australia/Sydney
+      #- VRKN_GLOBAL_SONARR_SERVER_IDS=1
+      #- VRKN_GLOBAL_RADARR_SERVER_IDS=1
+      #- VRKN_GLOBAL_LIDARR_SERVER_IDS=false
+      - VRKN_GLOBAL_TAUTULLI_SERVER_IDS=1
+      #- VRKN_GLOBAL_OMBI_SERVER_IDS=1
+      #- VRKN_GLOBAL_SICKCHILL_SERVER_IDS=false
+      #- VRKN_GLOBAL_UNIFI_SERVER_IDS=false
+      - VRKN_GLOBAL_MAXMIND_LICENSE_KEY=J7fRlw2sdOkt0NpT
+      - VRKN_INFLUXDB_URL=influxdb
+      - VRKN_INFLUXDB_PORT=8086
+      - VRKN_INFLUXDB_SSL=false
+      - VRKN_INFLUXDB_VERIFY_SSL=false
+      - VRKN_TAUTULLI_1_URL=tautulli:8181
+      - VRKN_TAUTULLI_1_FALLBACK_IP=159.196.101.253
+      - VRKN_TAUTULLI_1_APIKEY=b7480d513d3a46069eaba6a10d9be506
+      - VRKN_TAUTULLI_1_SSL=false
+      - VRKN_TAUTULLI_1_VERIFY_SSL=false
+      - VRKN_TAUTULLI_1_GET_ACTIVITY=true
+      - VRKN_TAUTULLI_1_GET_ACTIVITY_RUN_SECONDS=30
+      - VRKN_TAUTULLI_1_GET_STATS=true
+      - VRKN_TAUTULLI_1_GET_STATS_RUN_SECONDS=3600
+      #- VRKN_SONARR_1_URL=sonarr1.domain.tld:8989
+      #- VRKN_SONARR_1_APIKEY=xxxxxxxxxxxxxxxx
+      #- VRKN_SONARR_1_SSL=false
+      #- VRKN_SONARR_1_VERIFY_SSL=false
+      #- VRKN_SONARR_1_MISSING_DAYS=7
+      #- VRKN_SONARR_1_MISSING_DAYS_RUN_SECONDS=300
+      #- VRKN_SONARR_1_FUTURE_DAYS=1
+      #- VRKN_SONARR_1_FUTURE_DAYS_RUN_SECONDS=300
+      #- VRKN_SONARR_1_QUEUE=true
+      #- VRKN_SONARR_1_QUEUE_RUN_SECONDS=300
+      #- VRKN_RADARR_1_URL=radarr1.domain.tld
+      #- VRKN_RADARR_1_APIKEY=xxxxxxxxxxxxxxxx
+      #- VRKN_RADARR_1_SSL=false
+      #- VRKN_RADARR_1_VERIFY_SSL=false
+      #- VRKN_RADARR_1_QUEUE=true
+      #- VRKN_RADARR_1_QUEUE_RUN_SECONDS=300
+      #- VRKN_RADARR_1_GET_MISSING=true
+      #- VRKN_RADARR_1_GET_MISSING_RUN_SECONDS=300
+      #- VRKN_LIDARR_1_URL=lidarr1.domain.tld:8686
+      #- VRKN_LIDARR_1_APIKEY=xxxxxxxxxxxxxxxx
+      #- VRKN_LIDARR_1_SSL=false
+      #- VRKN_LIDARR_1_VERIFY_SSL=false
+      #- VRKN_LIDARR_1_MISSING_DAYS=30
+      #- VRKN_LIDARR_1_MISSING_DAYS_RUN_SECONDS=300
+      #- VRKN_LIDARR_1_FUTURE_DAYS=30
+      #- VRKN_LIDARR_1_FUTURE_DAYS_RUN_SECONDS=300
+      #- VRKN_LIDARR_1_QUEUE=true
+      #- VRKN_LIDARR_1_QUEUE_RUN_SECONDS=300
+      #- VRKN_OMBI_1_URL=ombi.domain.tld
+      #- VRKN_OMBI_1_APIKEY=xxxxxxxxxxxxxxxx
+      #- VRKN_OMBI_1_SSL=false
+      #- VRKN_OMBI_1_VERIFY_SSL=false
+      #- VRKN_OMBI_1_GET_REQUEST_TYPE_COUNTS=true
+      #- VRKN_OMBI_1_REQUEST_TYPE_RUN_SECONDS=300
+      #- VRKN_OMBI_1_GET_REQUEST_TOTAL_COUNTS=true
+      #- VRKN_OMBI_1_REQUEST_TOTAL_RUN_SECONDS=300
+      #- VRKN_OMBI_1_GET_ISSUE_STATUS_COUNTS=true
+      #- VRKN_OMBI_1_ISSUE_STATUS_RUN_SECONDS=300
+    restart: unless-stopped
